@@ -1,0 +1,324 @@
+{\rtf1\ansi\deff0\deftab480
+
+{\fonttbl
+{\f000 Courier New;}
+{\f001 Courier New;}
+{\f002 Courier New;}
+{\f003 Courier New;}
+{\f004 Courier New;}
+{\f005 Courier New;}
+{\f006 Courier New;}
+{\f007 Courier New;}
+{\f008 Courier New;}
+}
+
+{\colortbl
+\red000\green000\blue000;
+\red255\green255\blue255;
+\red000\green128\blue000;
+\red255\green255\blue255;
+\red255\green000\blue000;
+\red255\green255\blue255;
+\red128\green128\blue128;
+\red255\green255\blue255;
+\red000\green000\blue255;
+\red255\green255\blue255;
+\red255\green000\blue255;
+\red255\green255\blue255;
+\red000\green000\blue128;
+\red255\green255\blue255;
+\red000\green000\blue000;
+\red255\green255\blue255;
+\red000\green000\blue000;
+\red255\green255\blue255;
+}
+
+\f0\fs20\cb17\cf16 \highlight3\cf2 #!/usr/bin/env python\highlight1\cf0 \par
+\highlight3\cf2 # --------------------------------------------------------------\highlight1\cf0 \par
+\highlight3\cf2 # Technikerarbeit Elektrotechnik\highlight1\cf0 \par
+\highlight3\cf2 # Alexander Wiltz, EW16\highlight1\cf0 \par
+\highlight3\cf2 # --------------------------------------------------------------\highlight1\cf0 \par
+\highlight3\cf2 # Thema:\highlight1\cf0 \par
+\highlight3\cf2 # RaspberryPi mit DOT-Matrix-Anzeigen betrieben mittels MAX7219\highlight1\cf0 \par
+\highlight3\cf2 # ueber SPI-Bus\highlight1\cf0 \par
+\highlight3\cf2 # --------------------------------------------------------------\highlight1\cf0 \par
+\par
+\highlight3\cf2 #Import der noetigen Bibliotheken\highlight1\cf0 \par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 max7219\highlight13\cf12\b .\highlight15\cf14\b0 led\highlight1\cf0 \par
+\highlight9\cf8\b from\highlight1\cf0\b0  \highlight15\cf14 max7219\highlight13\cf12\b .\highlight15\cf14\b0 font\highlight1\cf0  \highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 DEFAULT_FONT\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 LCD_FONT\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 UKR_FONT\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 TINY_FONT\highlight1\cf0  \par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 time\highlight1\cf0 \par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 spidev\highlight1\cf0 \par
+\par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 bluetooth\highlight1\cf0 \par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 time\highlight1\cf0 \par
+\par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight15\cf14 datetime\highlight1\cf0 \par
+\par
+\highlight3\cf2 #Zeitfunktionen\highlight1\cf0 \par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 getActualTime\highlight13\cf12\b ():\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Zeit nehmen und splitten\highlight1\cf0 \par
+    \highlight15\cf14 isTime\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 datetime\highlight13\cf12\b .\highlight15\cf14\b0 datetime\highlight13\cf12\b .\highlight15\cf14\b0 now\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \highlight15\cf14 stunden\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 isTime\highlight13\cf12\b .\highlight15\cf14\b0 hour\highlight1\cf0 \par
+    \highlight15\cf14 minuten\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 isTime\highlight13\cf12\b .\highlight15\cf14\b0 minute\highlight1\cf0 \par
+    \highlight15\cf14 sekunden\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 isTime\highlight13\cf12\b .\highlight15\cf14\b0 second\highlight1\cf0 \par
+\par
+    \highlight3\cf2 #F\u252?hrende Nullen f\u252?r die Uhrzeit und wandeln in String\highlight1\cf0 \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 stunden\highlight1\cf0  \highlight13\cf12\b <\highlight1\cf0\b0  \highlight5\cf4 10\highlight13\cf12\b :\highlight1\cf0\b0 \par
+        \highlight15\cf14 stunden\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "0"\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 stunden\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 minuten\highlight1\cf0  \highlight13\cf12\b <\highlight1\cf0\b0  \highlight5\cf4 10\highlight13\cf12\b :\highlight1\cf0\b0 \par
+        \highlight15\cf14 minuten\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "0"\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 minuten\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 sekunden\highlight1\cf0  \highlight13\cf12\b <\highlight1\cf0\b0  \highlight5\cf4 10\highlight13\cf12\b :\highlight1\cf0\b0 \par
+        \highlight15\cf14 sekunden\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "0"\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 sekunden\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+    \highlight9\cf8\b return\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 stunden\highlight13\cf12\b ),\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 minuten\highlight13\cf12\b ),\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 sekunden\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+\highlight3\cf2 #Funktionen fuer die Bluetooth-Server\highlight1\cf0 \par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 startBTserverOnce\highlight13\cf12\b ():\highlight1\cf0\b0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b =\highlight15\cf14\b0 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 BluetoothSocket\highlight13\cf12\b (\highlight1\cf0\b0  \highlight15\cf14 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 RFCOMM\highlight1\cf0  \highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight15\cf14 port\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 bind\highlight13\cf12\b ((\highlight7\cf6\b0 ""\highlight13\cf12\b ,\highlight15\cf14\b0 port\highlight13\cf12\b ))\highlight1\cf0\b0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 listen\highlight13\cf12\b (\highlight5\cf4\b0 1\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight15\cf14 client_sock\highlight13\cf12\b ,\highlight15\cf14\b0 address\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 accept\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Akzeptiere Verbindung zu "\highlight13\cf12\b ,\highlight15\cf14\b0 address\highlight13\cf12\b [\highlight5\cf4\b0 0\highlight13\cf12\b ])\highlight1\cf0\b0 \par
+    \par
+    \highlight15\cf14 data\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 client_sock\highlight13\cf12\b .\highlight15\cf14\b0 recv\highlight13\cf12\b (\highlight5\cf4\b0 1024\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "empfange [%s]"\highlight1\cf0  \highlight13\cf12\b %\highlight1\cf0\b0  \highlight15\cf14 data\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+    \highlight15\cf14 client_sock\highlight13\cf12\b .\highlight15\cf14\b0 close\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 close\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 startBTServer\highlight13\cf12\b ():\highlight1\cf0\b0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b =\highlight15\cf14\b0 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 BluetoothSocket\highlight13\cf12\b (\highlight1\cf0\b0  \highlight15\cf14 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 RFCOMM\highlight1\cf0  \highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight15\cf14 port\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 bind\highlight13\cf12\b ((\highlight7\cf6\b0 ""\highlight13\cf12\b ,\highlight15\cf14\b0 port\highlight13\cf12\b ))\highlight1\cf0\b0 \par
+    \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 listen\highlight13\cf12\b (\highlight5\cf4\b0 1\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight15\cf14 client_sock\highlight13\cf12\b ,\highlight15\cf14\b0 address\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 server_sock\highlight13\cf12\b .\highlight15\cf14\b0 accept\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Akzeptiere Verbindung zu "\highlight13\cf12\b ,\highlight15\cf14\b0 address\highlight13\cf12\b [\highlight5\cf4\b0 0\highlight13\cf12\b ])\highlight1\cf0\b0 \par
+    \highlight15\cf14 data\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 client_sock\highlight13\cf12\b .\highlight15\cf14\b0 recv\highlight13\cf12\b (\highlight5\cf4\b0 1024\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b return\highlight1\cf0\b0  \highlight15\cf14 data\highlight1\cf0 \par
+    \highlight15\cf14 time\highlight13\cf12\b .\highlight15\cf14\b0 sleep\highlight13\cf12\b (\highlight5\cf4\b0 0.02\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 nearby\highlight13\cf12\b ():\highlight1\cf0\b0 \par
+    \highlight15\cf14 nearby_devices\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 discover_devices\highlight13\cf12\b (\highlight15\cf14\b0 lookup_names\highlight13\cf12\b =\highlight9\cf8 True\highlight13\cf12 )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Gefundene Ger\u228?te %d"\highlight1\cf0  \highlight13\cf12\b %\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 nearby_devices\highlight13\cf12\b ))\highlight1\cf0\b0 \par
+    \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 addr\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 name\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 nearby_devices\highlight13\cf12\b :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "  %s - %s"\highlight1\cf0  \highlight13\cf12\b %\highlight1\cf0\b0  \highlight13\cf12\b (\highlight15\cf14\b0 addr\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 name\highlight13\cf12\b ))\highlight1\cf0\b0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 findDevice\highlight13\cf12\b (\highlight15\cf14\b0 target_adress\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+    \highlight15\cf14 target_name\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Added Device"\highlight1\cf0 \par
+    \highlight15\cf14 nearby_devices\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 discover_devices\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 bdaddr\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 nearby_devices\highlight13\cf12\b :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 target_name\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight15\cf14 bluetooth\highlight13\cf12\b .\highlight15\cf14\b0 lookup_name\highlight13\cf12\b (\highlight1\cf0\b0  \highlight15\cf14 bdaddr\highlight1\cf0  \highlight13\cf12\b ):\highlight1\cf0\b0 \par
+            \highlight15\cf14 target_address\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 bdaddr\highlight1\cf0 \par
+            \highlight9\cf8\b break\highlight1\cf0\b0 \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 target_address\highlight1\cf0  \highlight9\cf8\b is\highlight1\cf0\b0  \highlight9\cf8\b not\highlight1\cf0\b0  \highlight9\cf8\b None\highlight13\cf12 :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Ger\u228?t mit der Adresse"\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 target_address\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight7\cf6 "gefunden."\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b else\highlight13\cf12 :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Kein Ger\u228?t mit angegebener MAC-Adresse in Reichweite gefunden."\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+\highlight3\cf2 #Hilfsvariablen\highlight1\cf0 \par
+\highlight15\cf14 oldData\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 ""\highlight1\cf0 \par
+\par
+\highlight3\cf2 #Definition bzw Start des SPI-Bus\highlight1\cf0 \par
+\highlight15\cf14 spi\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 spidev\highlight13\cf12\b .\highlight15\cf14\b0 SpiDev\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+\par
+\highlight3\cf2 #Paramterdefinition\highlight1\cf0 \par
+\highlight15\cf14 font\highlight13\cf12\b =\highlight15\cf14\b0 LCD_FONT\highlight1\cf0 \par
+\highlight15\cf14 cascaded\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 8\highlight1\cf0 \par
+\highlight15\cf14 brightness\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 initDisplay\highlight13\cf12\b (\highlight15\cf14\b0 cascaded\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 brightness\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Funktion zum initialisieren (siehe Datenblatt MAX7219)\highlight1\cf0 \par
+    \highlight3\cf2 #Standardfunktion aus max7219 Bibliothek Problembehaftet\highlight1\cf0 \par
+    \highlight15\cf14 bus\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \highlight15\cf14 device\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \highlight3\cf2 #Verbindung aufbauen\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 open\highlight13\cf12\b (\highlight15\cf14\b0 bus\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 device\highlight13\cf12\b )\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Taktfrequenz Bus definieren und Modus festlegen\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 max_speed_hz\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 100000\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 mode\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \highlight3\cf2 #Initschritte\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0xB\highlight13\cf12\b ,\highlight5\cf4\b0 7\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Benutze alle Digits\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0x9\highlight13\cf12\b ,\highlight5\cf4\b0 0\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Decodemode aus\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0xF\highlight13\cf12\b ,\highlight5\cf4\b0 0\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Displaytest aus\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0xC\highlight13\cf12\b ,\highlight5\cf4\b0 1\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Shutdownmode aus\highlight1\cf0 \par
+    \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0xA\highlight13\cf12\b ,\highlight15\cf14\b0 brightness\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Intensitaet 0-15 (Standard =3)\highlight1\cf0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 brightnessPulses\highlight13\cf12\b (\highlight15\cf14\b0 cascaded\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 turns\highlight13\cf12\b =\highlight5\cf4\b0 1\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 endless\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ):\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Pulsiert Anzeige in Abhaengigkeit von 'turns', oder dauerhaft wenn 'endless=True'\highlight1\cf0 \par
+    \highlight9\cf8\b assert\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight1\cf0  \highlight13\cf12\b >\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0  \highlight9\cf8\b or\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight13\cf12\b ==\highlight9\cf8 None\highlight13\cf12 ,\highlight1\cf0\b0  \highlight7\cf6 "Anzahl der angegebenen Module ueberpruefen"\highlight1\cf0 \par
+    \par
+    \highlight15\cf14 a\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \highlight9\cf8\b while\highlight1\cf0\b0  \highlight15\cf14 endless\highlight1\cf0  \highlight9\cf8\b or\highlight1\cf0\b0  \highlight15\cf14 a\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight15\cf14\b0 turns\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+        \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 i\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight5\cf4\b0 0\highlight13\cf12\b ,\highlight5\cf4\b0 16\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+            \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0xA\highlight13\cf12\b ,\highlight15\cf14\b0 i\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0 \par
+            \highlight15\cf14 time\highlight13\cf12\b .\highlight15\cf14\b0 sleep\highlight13\cf12\b (\highlight5\cf4\b0 0.05\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 i\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight5\cf4\b0 0\highlight13\cf12\b ,\highlight5\cf4\b0 16\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+            \highlight15\cf14 i\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 15\highlight13\cf12\b -\highlight15\cf14\b0 i\highlight1\cf0 \par
+            \highlight15\cf14 spi\highlight13\cf12\b .\highlight15\cf14\b0 xfer2\highlight13\cf12\b ([\highlight5\cf4\b0 0xA\highlight13\cf12\b ,\highlight15\cf14\b0 i\highlight13\cf12\b ]*\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0 \par
+            \highlight15\cf14 time\highlight13\cf12\b .\highlight15\cf14\b0 sleep\highlight13\cf12\b (\highlight5\cf4\b0 0.05\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 a\highlight1\cf0  \highlight13\cf12\b +=\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 static_text\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b =\highlight9\cf8 None\highlight13\cf12 ):\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Zeigt Text ohne Bewegung an\highlight1\cf0 \par
+    \highlight3\cf2 #Invertiert Text bei 'invert = True'\highlight1\cf0 \par
+    \highlight9\cf8\b assert\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b >\highlight1\cf0\b0  \highlight5\cf4 0\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight7\cf6 "Es wurde kein Text angegeben"\highlight1\cf0 \par
+    \par
+    \highlight9\cf8\b try\highlight13\cf12 :\highlight1\cf0\b0 \par
+        \highlight3\cf2 #Beschneide String bei Ueberlaenge, sonst Fehler (zu wenig Geraete!)\highlight1\cf0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b >\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 msg\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 msg\highlight13\cf12\b [:-(\highlight15\cf14\b0 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )-\highlight15\cf14\b0 cascaded\highlight13\cf12\b )]\highlight1\cf0\b0 \par
+    \highlight9\cf8\b except\highlight13\cf12 :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b None\highlight1\cf0\b0 \par
+    \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 i\highlight13\cf12\b ,\highlight15\cf14\b0 j\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 enumerate\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b <\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 offset\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b -\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 offset\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 invert\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b False\highlight13\cf12 :\highlight1\cf0\b0 \par
+            \highlight15\cf14 i\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b -\highlight1\cf0\b0  \highlight15\cf14 i\highlight1\cf0  \highlight13\cf12\b -\highlight1\cf0\b0  \highlight15\cf14 offset\highlight1\cf0 \par
+        \highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 letter\highlight13\cf12\b (\highlight15\cf14\b0 i\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 ord\highlight13\cf12\b (\highlight15\cf14\b0 j\highlight13\cf12\b ),\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight11\cf10 scroll_text\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 direction\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 speed\highlight13\cf12\b =\highlight5\cf4\b0 0.25\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 turns\highlight13\cf12\b =\highlight5\cf4\b0 1\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b =\highlight9\cf8 None\highlight13\cf12 ):\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Scrollt einen Text durch die Displays\highlight1\cf0 \par
+    \highlight3\cf2 #'direction = False', scrollt von rechts nach links\highlight1\cf0 \par
+    \highlight3\cf2 #'direction = True', scrollt von links nach rechts\highlight1\cf0 \par
+    \highlight3\cf2 #'invert = True', dreht den Text um\highlight1\cf0 \par
+    \highlight3\cf2 #'speed' beeinflusst die scrollgeshwindigkeit in Sekunden/Wechsel\highlight1\cf0 \par
+    \highlight3\cf2 #'turns' bestimmt die Anzahl der Wiederholungen\highlight1\cf0 \par
+    \highlight9\cf8\b assert\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b >\highlight1\cf0\b0  \highlight5\cf4 0\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight7\cf6 "Es wurde kein Text zum Scrollen angegeben"\highlight1\cf0 \par
+    \highlight15\cf14 tmp\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 list\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \highlight15\cf14 x\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \highlight15\cf14 z\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \par
+    \highlight9\cf8\b while\highlight1\cf0\b0  \highlight15\cf14 z\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight15\cf14\b0 turns\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+        \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 i\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 msg\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 tmp\highlight13\cf12\b .\highlight15\cf14\b0 append\highlight13\cf12\b (\highlight15\cf14\b0 i\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 invert\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b False\highlight1\cf0\b0  \highlight9\cf8\b and\highlight1\cf0\b0  \highlight15\cf14 direction\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b True\highlight13\cf12 :\highlight1\cf0\b0 \par
+            \highlight15\cf14 tmp\highlight13\cf12\b .\highlight15\cf14\b0 reverse\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 direction\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b False\highlight1\cf0\b0  \highlight9\cf8\b and\highlight1\cf0\b0  \highlight15\cf14 invert\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b True\highlight13\cf12 :\highlight1\cf0\b0 \par
+            \highlight15\cf14 tmp\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight13\cf12\b [\highlight7\cf6\b0 " "\highlight13\cf12\b ]*(\highlight15\cf14\b0 cascaded\highlight13\cf12\b -\highlight5\cf4\b0 1\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 tmp\highlight1\cf0 \par
+            \highlight15\cf14 tmp\highlight13\cf12\b .\highlight15\cf14\b0 reverse\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 direction\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b False\highlight1\cf0\b0  \highlight9\cf8\b and\highlight1\cf0\b0  \highlight15\cf14 invert\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b False\highlight13\cf12 :\highlight1\cf0\b0 \par
+            \highlight15\cf14 tmp\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 tmp\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight13\cf12\b [\highlight7\cf6\b0 " "\highlight13\cf12\b ]*(\highlight15\cf14\b0 cascaded\highlight13\cf12\b -\highlight5\cf4\b0 1\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 tmp\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight13\cf12\b [\highlight7\cf6\b0 " "\highlight13\cf12\b ]*(\highlight15\cf14\b0 cascaded\highlight13\cf12\b -\highlight5\cf4\b0 1\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 tmp\highlight1\cf0 \par
+        \highlight9\cf8\b while\highlight1\cf0\b0  \highlight15\cf14 x\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight15\cf14\b0 len\highlight13\cf12\b (\highlight15\cf14\b0 tmp\highlight13\cf12\b )):\highlight1\cf0\b0 \par
+            \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 tmp\highlight13\cf12\b )\highlight1\cf0\b0  \highlight13\cf12\b >=\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                \highlight15\cf14 maxRange\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight1\cf0 \par
+            \highlight9\cf8\b else\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight15\cf14 maxRange\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 len\highlight13\cf12\b (\highlight15\cf14\b0 tmp\highlight13\cf12\b )\highlight1\cf0\b0 \par
+            \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 direction\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight9\cf8\b True\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 i\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight15\cf14\b0 maxRange\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+                    \highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 letter\highlight13\cf12\b (\highlight15\cf14\b0 i\highlight13\cf12\b ,\highlight15\cf14\b0 ord\highlight13\cf12\b (\highlight15\cf14\b0 tmp\highlight13\cf12\b [\highlight15\cf14\b0 i\highlight13\cf12\b ]),\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b )\highlight1\cf0\b0 \par
+                    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 maxRange\highlight1\cf0  \highlight13\cf12\b <=\highlight1\cf0\b0  \highlight13\cf12\b (\highlight15\cf14\b0 cascaded\highlight13\cf12\b -\highlight5\cf4\b0 1\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+                        \highlight15\cf14 i\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 maxRange\highlight1\cf0 \par
+                        \highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 clear\highlight13\cf12\b (\highlight15\cf14\b0 i\highlight13\cf12\b )\highlight1\cf0\b0 \par
+            \highlight9\cf8\b else\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight15\cf14 k\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight1\cf0  \highlight13\cf12\b -\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0             \par
+                \highlight9\cf8\b for\highlight1\cf0\b0  \highlight15\cf14 i\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 range\highlight13\cf12\b (\highlight15\cf14\b0 maxRange\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+                    \highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 letter\highlight13\cf12\b (\highlight15\cf14\b0 k\highlight13\cf12\b -\highlight15\cf14\b0 i\highlight13\cf12\b ,\highlight15\cf14\b0 ord\highlight13\cf12\b (\highlight15\cf14\b0 tmp\highlight13\cf12\b [\highlight15\cf14\b0 i\highlight13\cf12\b ]),\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b )\highlight1\cf0\b0 \par
+                    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 maxRange\highlight1\cf0  \highlight13\cf12\b <=\highlight1\cf0\b0  \highlight15\cf14 cascaded\highlight13\cf12\b -\highlight5\cf4\b0 1\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                        \highlight15\cf14 k\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 maxRange\highlight1\cf0 \par
+                        \highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 clear\highlight13\cf12\b (\highlight15\cf14\b0 k\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+            \highlight9\cf8\b try\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b del\highlight13\cf12 (\highlight15\cf14\b0 tmp\highlight13\cf12\b [\highlight5\cf4\b0 0\highlight13\cf12\b ])\highlight1\cf0\b0 \par
+            \highlight9\cf8\b except\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b None\highlight1\cf0\b0 \par
+               \par
+            \highlight15\cf14 time\highlight13\cf12\b .\highlight15\cf14\b0 sleep\highlight13\cf12\b (\highlight15\cf14\b0 speed\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 clear\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+        \highlight15\cf14 z\highlight1\cf0  \highlight13\cf12\b +=\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+    \par
+\highlight3\cf2 #Treiber initialisieren vor Beginn der Anzeigen\highlight1\cf0 \par
+\highlight15\cf14 initDisplay\highlight13\cf12\b (\highlight15\cf14\b0 cascaded\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 brightness\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\highlight3\cf2 #Funktionen aus max7219.led Lib\highlight1\cf0 \par
+\highlight15\cf14 device\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 max7219\highlight13\cf12\b .\highlight15\cf14\b0 led\highlight13\cf12\b .\highlight15\cf14\b0 matrix\highlight13\cf12\b (\highlight15\cf14\b0 cascaded\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Klassendefinition als device\highlight1\cf0 \par
+\highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 brightness\highlight13\cf12\b (\highlight15\cf14\b0 brightness\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Helligkeit vordefinieren (ueberschreibt aus max7219.led lib)\highlight1\cf0 \par
+\highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 clear\highlight13\cf12\b ()\highlight1\cf0\b0  \highlight3\cf2 #Anzeige komplett leeren\highlight1\cf0 \par
+\highlight15\cf14 device\highlight13\cf12\b .\highlight15\cf14\b0 orientation\highlight13\cf12\b (\highlight5\cf4\b0 90\highlight13\cf12\b )\highlight1\cf0\b0  \highlight3\cf2 #Orientierung auf Standard setzen\highlight1\cf0 \par
+\par
+\highlight15\cf14 msgInit\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Technikerarbeit 2020"\highlight1\cf0 \par
+\highlight15\cf14 scroll_text\highlight13\cf12\b (\highlight15\cf14\b0 msgInit\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 direction\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 speed\highlight13\cf12\b =\highlight5\cf4\b0 0.05\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 turns\highlight13\cf12\b =\highlight5\cf4\b0 1\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b =\highlight15\cf14\b0 font\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\par
+\highlight3\cf2 #Standardwerte setzen\highlight1\cf0 \par
+\highlight15\cf14 direction\highlight13\cf12\b =\highlight9\cf8 False\highlight1\cf0\b0 \par
+\highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight1\cf0\b0 \par
+\highlight15\cf14 speed\highlight13\cf12\b =\highlight5\cf4\b0 0.15\highlight1\cf0 \par
+\highlight15\cf14 turns\highlight13\cf12\b =\highlight5\cf4\b0 1\highlight1\cf0 \par
+\par
+\highlight15\cf14 oldSekunden\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 ""\highlight1\cf0 \par
+\highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Start BT-Server..."\highlight13\cf12\b )\highlight1\cf0\b0 \par
+\highlight15\cf14 count\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0\highlight1\cf0 \par
+    \par
+\highlight9\cf8\b while\highlight1\cf0\b0  \highlight9\cf8\b True\highlight13\cf12 :\highlight1\cf0\b0 \par
+    \highlight3\cf2 #Bluetooth-Server starten und auf neue Nachrichten warten\highlight1\cf0 \par
+    \highlight15\cf14 data\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 startBTServer\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+    \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight7\cf6 "<#"\highlight1\cf0  \highlight9\cf8\b and\highlight1\cf0\b0  \highlight7\cf6 "#>"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 data\highlight13\cf12\b .\highlight15\cf14\b0 decode\highlight13\cf12\b (\highlight7\cf6\b0 "utf-8"\highlight13\cf12\b ):\highlight1\cf0\b0 \par
+        \highlight15\cf14 codeStrLst\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 data\highlight13\cf12\b .\highlight15\cf14\b0 decode\highlight13\cf12\b (\highlight7\cf6\b0 "utf-8"\highlight13\cf12\b ).\highlight15\cf14\b0 split\highlight13\cf12\b (\highlight7\cf6\b0 "<#"\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 codeStrLst\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 codeStrLst\highlight13\cf12\b [\highlight5\cf4\b0 1\highlight13\cf12\b ].\highlight15\cf14\b0 split\highlight13\cf12\b (\highlight7\cf6\b0 "#>"\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 codeStr\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 codeStrLst\highlight13\cf12\b [\highlight5\cf4\b0 0\highlight13\cf12\b ]\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Parameter detected:"\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight7\cf6 "turns"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight9\cf8\b try\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight15\cf14 turns\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 int\highlight13\cf12\b (\highlight15\cf14\b0 codeStr\highlight13\cf12\b .\highlight15\cf14\b0 split\highlight13\cf12\b (\highlight7\cf6\b0 "="\highlight13\cf12\b )[\highlight5\cf4\b0 1\highlight13\cf12\b ])\highlight1\cf0\b0 \par
+                \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 turns\highlight1\cf0  \highlight13\cf12\b >\highlight1\cf0\b0  \highlight5\cf4 9\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                    \highlight15\cf14 turns\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 9\highlight1\cf0 \par
+                \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 turns\highlight1\cf0  \highlight13\cf12\b <\highlight1\cf0\b0  \highlight5\cf4 1\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                    \highlight15\cf14 turns\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+            \highlight9\cf8\b except\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b None\highlight1\cf0\b0 \par
+            \highlight15\cf14 msgInfo\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Set 'turns' to "\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 turns\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight7\cf6 "dir"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 dirCheck\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b .\highlight15\cf14\b0 split\highlight13\cf12\b (\highlight7\cf6\b0 "="\highlight13\cf12\b )[\highlight5\cf4\b0 1\highlight13\cf12\b ]\highlight1\cf0\b0 \par
+            \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 dirCheck\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight7\cf6 "ltr"\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                \highlight15\cf14 direction\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight9\cf8\b True\highlight1\cf0\b0 \par
+            \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 dirCheck\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight7\cf6 "rtl"\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                \highlight15\cf14 direction\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight9\cf8\b False\highlight1\cf0\b0 \par
+            \highlight9\cf8\b else\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b None\highlight1\cf0\b0 \par
+            \highlight15\cf14 msgInfo\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Set 'direction' to "\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 direction\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight7\cf6 "inv"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 invCheck\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b .\highlight15\cf14\b0 split\highlight13\cf12\b (\highlight7\cf6\b0 "="\highlight13\cf12\b )[\highlight5\cf4\b0 1\highlight13\cf12\b ]\highlight1\cf0\b0 \par
+            \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 invCheck\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight7\cf6 "True"\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                \highlight15\cf14 invert\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight9\cf8\b True\highlight1\cf0\b0 \par
+            \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 dirCheck\highlight1\cf0  \highlight13\cf12\b ==\highlight1\cf0\b0  \highlight7\cf6 "False"\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                \highlight15\cf14 invert\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight9\cf8\b False\highlight1\cf0\b0 \par
+            \highlight9\cf8\b else\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b None\highlight1\cf0\b0 \par
+            \highlight15\cf14 msgInfo\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight7\cf6\b0 "Set 'invertation' to "\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight7\cf6 "speed"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight9\cf8\b try\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight15\cf14 speed\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 float\highlight13\cf12\b (\highlight15\cf14\b0 codeStr\highlight13\cf12\b .\highlight15\cf14\b0 split\highlight13\cf12\b (\highlight7\cf6\b0 "="\highlight13\cf12\b )[\highlight5\cf4\b0 1\highlight13\cf12\b ])\highlight1\cf0\b0 \par
+                \highlight9\cf8\b if\highlight1\cf0\b0  \highlight15\cf14 speed\highlight1\cf0  \highlight13\cf12\b >\highlight1\cf0\b0  \highlight5\cf4 1\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                    \highlight15\cf14 speed\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+                \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 speed\highlight1\cf0  \highlight13\cf12\b <\highlight1\cf0\b0  \highlight5\cf4 0.05\highlight13\cf12\b :\highlight1\cf0\b0 \par
+                    \highlight15\cf14 speed\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight5\cf4 0.05\highlight1\cf0 \par
+            \highlight9\cf8\b except\highlight13\cf12 :\highlight1\cf0\b0 \par
+                \highlight9\cf8\b None\highlight1\cf0\b0 \par
+            \highlight15\cf14 msgInfo\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Set 'speed' to "\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 speed\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight7\cf6 "default"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight15\cf14 direction\highlight13\cf12\b =\highlight9\cf8 False\highlight1\cf0\b0 \par
+            \highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight1\cf0\b0 \par
+            \highlight15\cf14 speed\highlight13\cf12\b =\highlight5\cf4\b0 0.15\highlight1\cf0 \par
+            \highlight15\cf14 turns\highlight13\cf12\b =\highlight5\cf4\b0 1\highlight1\cf0 \par
+            \highlight15\cf14 msgInfo\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Set all to default"\highlight1\cf0 \par
+        \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight7\cf6 "time"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight3\cf2 #Wechsel in Uhrzeitanzeige\highlight1\cf0 \par
+            \highlight15\cf14 stunden\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 minuten\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 sekunden\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 getActualTime\highlight13\cf12\b ()\highlight1\cf0\b0 \par
+            \highlight15\cf14 msgTime\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 stunden\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight7\cf6 ":"\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 minuten\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight7\cf6 ":"\highlight1\cf0  \highlight13\cf12\b +\highlight1\cf0\b0  \highlight15\cf14 sekunden\highlight1\cf0 \par
+            \highlight15\cf14 static_text\highlight13\cf12\b (\highlight15\cf14\b0 msgTime\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b =\highlight9\cf8 None\highlight13\cf12 )\highlight1\cf0\b0       \par
+            \highlight15\cf14 time\highlight13\cf12\b .\highlight15\cf14\b0 sleep\highlight13\cf12\b (\highlight5\cf4\b0 0.02\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight9\cf8\b else\highlight13\cf12 :\highlight1\cf0\b0 \par
+            \highlight15\cf14 msgInfo\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight7\cf6 "Unknown command"\highlight1\cf0 \par
+            \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight9\cf8\b not\highlight1\cf0\b0  \highlight7\cf6 "time"\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight15\cf14 codeStr\highlight13\cf12\b :\highlight1\cf0\b0 \par
+            \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "Feedback:"\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 msgInfo\highlight13\cf12\b )\highlight1\cf0\b0 \par
+            \highlight15\cf14 scroll_text\highlight13\cf12\b (\highlight15\cf14\b0 msgInfo\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 direction\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b =\highlight9\cf8 False\highlight13\cf12 ,\highlight1\cf0\b0  \highlight15\cf14 speed\highlight13\cf12\b =\highlight5\cf4\b0 0.05\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 turns\highlight13\cf12\b =\highlight5\cf4\b0 1\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b =\highlight15\cf14\b0 font\highlight13\cf12\b )\highlight1\cf0\b0 \par
+            \par
+    \highlight9\cf8\b elif\highlight1\cf0\b0  \highlight15\cf14 data\highlight1\cf0  \highlight13\cf12\b !=\highlight1\cf0\b0  \highlight15\cf14 oldData\highlight13\cf12\b :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight13\cf12 (\highlight7\cf6\b0 "New message received..."\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 msg\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 str\highlight13\cf12\b (\highlight15\cf14\b0 data\highlight13\cf12\b .\highlight15\cf14\b0 decode\highlight13\cf12\b (\highlight7\cf6\b0 "utf-8"\highlight13\cf12\b ))\highlight1\cf0\b0 \par
+        \highlight15\cf14 scroll_text\highlight13\cf12\b (\highlight15\cf14\b0 msg\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 direction\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 invert\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 speed\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 turns\highlight13\cf12\b ,\highlight1\cf0\b0  \highlight15\cf14 font\highlight13\cf12\b =\highlight15\cf14\b0 font\highlight13\cf12\b )\highlight1\cf0\b0 \par
+        \highlight15\cf14 oldData\highlight1\cf0  \highlight13\cf12\b =\highlight1\cf0\b0  \highlight15\cf14 data}

@@ -1,0 +1,110 @@
+{\rtf1\ansi\deff0\deftab480
+
+{\fonttbl
+{\f000 Courier New;}
+{\f001 Courier New;}
+{\f002 Courier New;}
+{\f003 Courier New;}
+{\f004 Courier New;}
+{\f005 Courier New;}
+{\f006 Courier New;}
+{\f007 Courier New;}
+{\f008 Courier New;}
+{\f009 Courier New;}
+{\f010 Courier New;}
+}
+
+{\colortbl
+\red000\green000\blue000;
+\red255\green255\blue255;
+\red000\green128\blue000;
+\red255\green255\blue255;
+\red255\green000\blue000;
+\red255\green255\blue255;
+\red128\green128\blue128;
+\red255\green255\blue255;
+\red000\green000\blue255;
+\red255\green255\blue255;
+\red255\green128\blue000;
+\red255\green255\blue255;
+\red255\green000\blue255;
+\red255\green255\blue255;
+\red000\green000\blue128;
+\red255\green255\blue255;
+\red000\green000\blue000;
+\red255\green255\blue255;
+\red000\green128\blue000;
+\red255\green255\blue255;
+\red000\green000\blue000;
+\red255\green255\blue255;
+}
+
+\f0\fs20\cb21\cf20 \highlight3\cf2 #!/usr/bin/python\highlight1\cf0 \par
+\highlight3\cf2 #Alexander Wiltz, 2019\highlight1\cf0 \par
+\par
+\highlight3\cf2 #<#code#>\highlight1\cf0 \par
+\highlight3\cf2 #<#turns=999#> Anz WdH\highlight1\cf0 \par
+\highlight3\cf2 #<#dir=ltr#><#dir=rtl#> Startrichtung\highlight1\cf0 \par
+\highlight3\cf2 #<#inv=True#> Dreht Buchstaben\highlight1\cf0 \par
+\highlight3\cf2 #<#speed=1#> Geschwindigkeit max=1 und min=0.01 (Pausenzeit)\highlight1\cf0 \par
+\highlight3\cf2 #<#default#> Setzt alle Parameter auf Standard zurueck\highlight1\cf0 \par
+\highlight3\cf2 #<#time#> Zeigt die aktuelle Uhrzeit an\highlight1\cf0 \par
+\highlight11\cf10 '''\par
+static_text(msg, invert=False, font=None)\par
+Zeigt Text ohne Bewegung an (maximale Zeichenzahl = Anzahl Displays).\par
+Dreht den Text um, wenn invert = True. Die Variable msg beinhaltet den anzuzeigenden Text. F\u252?r font ist ein alternativer Zeichensatz geplant, der allerdings noch nicht umgesetzt ist.\par
+\par
+scroll_text(msg, direction=False, invert=False, speed=0.25, turns=1, font=None)\par
+L\u228?sst einen in msg angegebenen Text \u252?ber das Display laufen. Ver\u228?nderliche Parameter, wie direction, drehen die Startrichtung, invert dreht die Buchstaben, speed gibt die Scrollgeschwindigkeit an. Durch turns wird die Anzahl der Scrollwiederholungen festgelgt.\par
+Font ist noch nicht umgesetzt.\par
+'''\highlight1\cf0 \par
+\par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight17\cf16 bluetooth\highlight1\cf0 \par
+\highlight9\cf8\b import\highlight1\cf0\b0  \highlight17\cf16 time\highlight1\cf0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight13\cf12 nearby\highlight15\cf14\b ():\highlight1\cf0\b0 \par
+    \highlight17\cf16 nearby_devices\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight17\cf16 bluetooth\highlight15\cf14\b .\highlight17\cf16\b0 discover_devices\highlight15\cf14\b (\highlight17\cf16\b0 lookup_names\highlight15\cf14\b =\highlight9\cf8 True\highlight15\cf14 )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "Gefundene Ger\u228?te %d"\highlight1\cf0  \highlight15\cf14\b %\highlight1\cf0\b0  \highlight17\cf16 len\highlight15\cf14\b (\highlight17\cf16\b0 nearby_devices\highlight15\cf14\b ))\highlight1\cf0\b0 \par
+    \highlight9\cf8\b for\highlight1\cf0\b0  \highlight17\cf16 addr\highlight15\cf14\b ,\highlight1\cf0\b0  \highlight17\cf16 name\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight17\cf16 nearby_devices\highlight15\cf14\b :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "  %s - %s"\highlight1\cf0  \highlight15\cf14\b %\highlight1\cf0\b0  \highlight15\cf14\b (\highlight17\cf16\b0 addr\highlight15\cf14\b ,\highlight1\cf0\b0  \highlight17\cf16 name\highlight15\cf14\b ))\highlight1\cf0\b0 \par
+\par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight13\cf12 findDevice\highlight15\cf14\b (\highlight17\cf16\b0 target_adress\highlight15\cf14\b ):\highlight1\cf0\b0 \par
+    \highlight17\cf16 target_name\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight7\cf6 "Added Device"\highlight1\cf0 \par
+    \highlight3\cf2 #target_adress = "B8:27:EB:51:6E:53" #MAC-Adresse Raspberry\highlight1\cf0 \par
+    \highlight17\cf16 nearby_devices\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight17\cf16 bluetooth\highlight15\cf14\b .\highlight17\cf16\b0 discover_devices\highlight15\cf14\b ()\highlight1\cf0\b0 \par
+    \highlight9\cf8\b for\highlight1\cf0\b0  \highlight17\cf16 bdaddr\highlight1\cf0  \highlight9\cf8\b in\highlight1\cf0\b0  \highlight17\cf16 nearby_devices\highlight15\cf14\b :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b if\highlight1\cf0\b0  \highlight17\cf16 target_name\highlight1\cf0  \highlight15\cf14\b ==\highlight1\cf0\b0  \highlight17\cf16 bluetooth\highlight15\cf14\b .\highlight17\cf16\b0 lookup_name\highlight15\cf14\b (\highlight1\cf0\b0  \highlight17\cf16 bdaddr\highlight1\cf0  \highlight15\cf14\b ):\highlight1\cf0\b0 \par
+            \highlight17\cf16 target_address\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight17\cf16 bdaddr\highlight1\cf0 \par
+            \highlight9\cf8\b break\highlight1\cf0\b0 \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight17\cf16 target_address\highlight1\cf0  \highlight9\cf8\b is\highlight1\cf0\b0  \highlight9\cf8\b not\highlight1\cf0\b0  \highlight9\cf8\b None\highlight15\cf14 :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "Ger\u228?t mit der Adresse"\highlight15\cf14\b ,\highlight1\cf0\b0  \highlight17\cf16 target_address\highlight15\cf14\b ,\highlight1\cf0\b0  \highlight7\cf6 "gefunden."\highlight15\cf14\b )\highlight1\cf0\b0 \par
+    \highlight9\cf8\b else\highlight15\cf14 :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "Kein Ger\u228?t mit angegebener MAC-Adresse in Reichweite gefunden."\highlight15\cf14\b )\highlight1\cf0\b0 \par
+    \par
+\highlight9\cf8\b def\highlight1\cf0\b0  \highlight13\cf12 startBTClient\highlight15\cf14\b (\highlight17\cf16\b0 target_adress\highlight15\cf14\b ,\highlight1\cf0\b0  \highlight17\cf16 msg\highlight15\cf14\b ):\highlight1\cf0\b0 \par
+    \highlight3\cf2 #target_adress = "B8:27:EB:51:6E:53" #MAC-Adresse Raspberry\highlight1\cf0 \par
+    \highlight3\cf2 #msg = "Hallo Raspberry" #Message an Pi\highlight1\cf0 \par
+    \highlight17\cf16 port\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight5\cf4 1\highlight1\cf0 \par
+    \highlight17\cf16 sock\highlight15\cf14\b =\highlight17\cf16\b0 bluetooth\highlight15\cf14\b .\highlight17\cf16\b0 BluetoothSocket\highlight15\cf14\b (\highlight1\cf0\b0  \highlight17\cf16 bluetooth\highlight15\cf14\b .\highlight17\cf16\b0 RFCOMM\highlight1\cf0  \highlight15\cf14\b )\highlight1\cf0\b0 \par
+    \highlight17\cf16 sock\highlight15\cf14\b .\highlight17\cf16\b0 connect\highlight15\cf14\b ((\highlight17\cf16\b0 target_adress\highlight15\cf14\b ,\highlight17\cf16\b0 port\highlight15\cf14\b ))\highlight1\cf0\b0 \par
+    \highlight17\cf16 sock\highlight15\cf14\b .\highlight17\cf16\b0 send\highlight15\cf14\b (\highlight17\cf16\b0 msg\highlight15\cf14\b )\highlight1\cf0\b0 \par
+    \highlight17\cf16 sock\highlight15\cf14\b .\highlight17\cf16\b0 close\highlight15\cf14\b ()\highlight1\cf0\b0 \par
+\par
+\highlight19\cf18 ##################################################################################\highlight1\cf0 \par
+\highlight17\cf16 msg\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight7\cf6 ""\highlight1\cf0 \par
+\highlight17\cf16 oldMSG\highlight1\cf0  \highlight15\cf14\b =\highlight7\cf6\b0 ""\highlight1\cf0 \par
+\highlight17\cf16 target_adress\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight7\cf6 "B8:27:EB:51:6E:53"\highlight1\cf0 \par
+\par
+\highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "#############################################"\highlight15\cf14\b ),\highlight17\cf16\b0 time\highlight15\cf14\b .\highlight17\cf16\b0 sleep\highlight15\cf14\b (\highlight5\cf4\b0 0.2\highlight15\cf14\b )\highlight1\cf0\b0 \par
+\highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "Welcome to BT-Console for RaspberryPi-Project"\highlight15\cf14\b ),\highlight17\cf16\b0 time\highlight15\cf14\b .\highlight17\cf16\b0 sleep\highlight15\cf14\b (\highlight5\cf4\b0 0.2\highlight15\cf14\b )\highlight1\cf0\b0 \par
+\highlight9\cf8\b print\highlight15\cf14 (\highlight7\cf6\b0 "#############################################"\highlight15\cf14\b ),\highlight17\cf16\b0 time\highlight15\cf14\b .\highlight17\cf16\b0 sleep\highlight15\cf14\b (\highlight5\cf4\b0 0.2\highlight15\cf14\b )\highlight1\cf0\b0 \par
+\par
+\highlight9\cf8\b while\highlight1\cf0\b0  \highlight9\cf8\b True\highlight15\cf14 :\highlight1\cf0\b0 \par
+    \highlight17\cf16 msg\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight17\cf16 str\highlight15\cf14\b (\highlight17\cf16\b0 input\highlight15\cf14\b (\highlight7\cf6\b0 "Nachricht: "\highlight15\cf14\b ))\highlight1\cf0\b0 \par
+    \highlight9\cf8\b if\highlight1\cf0\b0  \highlight17\cf16 msg\highlight1\cf0  \highlight15\cf14\b !=\highlight1\cf0\b0  \highlight17\cf16 oldMSG\highlight15\cf14\b :\highlight1\cf0\b0 \par
+        \highlight17\cf16 startBTClient\highlight15\cf14\b (\highlight17\cf16\b0 target_adress\highlight15\cf14\b ,\highlight1\cf0\b0  \highlight17\cf16 msg\highlight15\cf14\b )\highlight1\cf0\b0 \par
+        \highlight17\cf16 oldMSG\highlight1\cf0  \highlight15\cf14\b =\highlight1\cf0\b0  \highlight17\cf16 msg\highlight1\cf0 \par
+    \highlight9\cf8\b else\highlight15\cf14 :\highlight1\cf0\b0 \par
+        \highlight9\cf8\b continue\highlight1\cf0\b0 \par
+\par
+}
